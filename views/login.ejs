@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page with Immediate Floating Text</title>
+    <style>
+        /* Reset some default styling */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Body styling */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #333;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating text styling */
+        .floating-text {
+            position: absolute;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.5);
+            animation: float linear infinite;
+            white-space: nowrap;
+            pointer-events: none;
+            bottom: 0; /* Start at the bottom of the viewport */
+        }
+
+        /* Floating animation */
+        @keyframes float {
+            0% {
+                transform: translateY(0); /* Start at the current position */
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-120vh) translateX(10vw);
+                opacity: 0;
+            }
+        }
+
+        /* Login container */
+        .login-container {
+            background-color: #222;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            text-align: center;
+            color: #f5f5f5;
+            z-index: 1;
+        }
+
+        /* Header styling */
+        .login-container h1 {
+            font-size: 26px;
+            color: #ffd700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Input styling */
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #bbb;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #555;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #333;
+            color: #f5f5f5;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #ffd700;
+            outline: none;
+        }
+
+        /* Button styling */
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 16px;
+            color: #222;
+            background-color: #ffd700;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #e6b800;
+        }
+
+        /* Footer styling */
+        .footer-text {
+            margin-top: 1rem;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .footer-text a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating text container -->
+    <div id="floating-text-container"></div>
+
+    <!-- Login container -->
+    <div class="login-container">
+        <h1>Login</h1>
+        <form action="/login" method="post">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required />
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div>
+                <input type="submit" class="login-btn" value="Log In" />
+            </div>
+        </form>
+        <p class="footer-text">Forgot your password? <a href="#">Click here</a></p>
+    </div>
+
+    <script>
+        // Extended array of coding words (100+ words)
+        const codingWords = [
+            "JavaScript", "HTML", "CSS", "Python", "Java", "C++", "Ruby", "SQL", "React", "Node.js",
+            "Express", "MongoDB", "MySQL", "PostgreSQL", "Angular", "Vue.js", "Django", "Flask", "Spring", "Kotlin",
+            "Swift", "TypeScript", "PHP", "Laravel", "ASP.NET", "C#", "F#", "Rust", "Go", "Perl",
+            "Scala", "Haskell", "R", "MATLAB", "Pandas", "NumPy", "TensorFlow", "Keras", "PyTorch", "SASS",
+            "LESS", "Bootstrap", "Tailwind", "GraphQL", "Redux", "MobX", "jQuery", "Backbone.js", "Ember.js", "Svelte",
+            "Clojure", "Objective-C", "Erlang", "Elixir", "Shell", "PowerShell", "Bash", "CMake", "Docker", "Kubernetes",
+            "Jenkins", "Travis CI", "CircleCI", "AWS", "Azure", "GCP", "Firebase", "Heroku", "Netlify", "Vercel",
+            "Xcode", "Android Studio", "IntelliJ", "Visual Studio", "Eclipse", "Unity", "Unreal Engine", "GameMaker", "RPG Maker", "Three.js",
+            "WebGL", "OpenGL", "TensorRT", "PySpark", "Hadoop", "Apache Kafka", "Redis", "Elasticsearch", "Solr", "RabbitMQ",
+            "REST API", "SOAP", "JSON", "YAML", "XML", "Webpack", "Gulp", "Grunt", "Parcel", "npm",
+            "Yarn", "Jupyter", "Anaconda", "RStudio", "Postman", "Swagger", "Figma", "Sketch", "Adobe XD", "Photoshop"
+        ];
+
+        // Function to create floating text elements
+        function createFloatingText() {
+            const text = document.createElement("div");
+            text.classList.add("floating-text");
+            text.style.left = Math.random() * 100 + "vw";
+            text.style.animationDuration = Math.random() * 3 + 5 + "s"; // Duration between 5s and 8s
+            text.innerText = codingWords[Math.floor(Math.random() * codingWords.length)];
+            document.getElementById("floating-text-container").appendChild(text);
+
+            // Remove text after animation completes
+            text.addEventListener("animationend", () => {
+                text.remove();
+            });
+        }
+        setInterval(createFloatingText, 800); 
+    </script>
+</body>
+</html>
