@@ -1,23 +1,28 @@
-const express = require('express');
+const express = require('express'); 
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
-const cors = require('cors'); // Import cors
+const cors = require('cors');
+const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 const users = require('./users');
 
 const app = express();
 
-// Use CORS
-// app.use(cors()); // Enable CORS for all routes by default
+// Secret key for JWT
+const JWT_SECRET = 'your_jwt_secret_key'; // Replace with a secure key in production
+
+// CORS configuration
 app.use(cors({
     origin: 'http://localhost:3001', // Ensure this matches your frontend URL exactly
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // List allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Add other headers if needed
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(session({
     secret: 'your_secret_key', // Replace with a secure secret in production
     resave: false,
@@ -55,17 +60,23 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to the API' });
 });
 
+// Login route with Passport authentication and JWT generation
 app.post('/login',
-    // passport.authenticate('local', { failureRedirect: '/login-failure' }),
+    passport.authenticate('local', { failureRedirect: '/login-failure', failureMessage: true }),
     (req, res) => {
-        res.json({ message: 'Login successful', user: req.user });
+        // Generate JWT token on successful login
+        const token = jwt.sign({ id: req.user.id, username: req.user.username }, JWT_SECRET, { expiresIn: '1h' });
+        
+        // Send user data and token
+        res.json({ message: 'Login successful', user: req.user, token });
     }
 );
 
 app.get('/login-failure', (req, res) => {
-    res.json({ message: 'Login failed' });
+    res.status(401).json({ message: 'Login failed', error: req.session.messages });
 });
 
+// Protected route (example) using JWT
 app.get('/home', (req, res) => {
     if (req.isAuthenticated()) {
         res.json({ message: 'Welcome to the home page', user: req.user });
