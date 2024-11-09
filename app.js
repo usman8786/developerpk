@@ -1,16 +1,21 @@
-// app.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
+const cors = require('cors'); // Import cors
 const users = require('./users');
 
 const app = express();
 
-// Set up EJS for templating
-app.set('view engine', 'ejs');
-
+// Use CORS
+// app.use(cors()); // Enable CORS for all routes by default
+app.use(cors({
+    origin: 'http://localhost:3001', // Ensure this matches your frontend URL exactly
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // List allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Add other headers if needed
+    credentials: true
+}));
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
@@ -47,28 +52,32 @@ passport.deserializeUser(function(id, done) {
 
 // Routes
 app.get('/', (req, res) => {
-    res.render('login');
+    res.json({ message: 'Welcome to the API' });
 });
 
 app.post('/login',
-    passport.authenticate('local', {
-        successRedirect: '/home',
-        failureRedirect: '/'
-    })
+    // passport.authenticate('local', { failureRedirect: '/login-failure' }),
+    (req, res) => {
+        res.json({ message: 'Login successful', user: req.user });
+    }
 );
+
+app.get('/login-failure', (req, res) => {
+    res.json({ message: 'Login failed' });
+});
 
 app.get('/home', (req, res) => {
     if (req.isAuthenticated()) {
-        res.render('home', { user: req.user });
+        res.json({ message: 'Welcome to the home page', user: req.user });
     } else {
-        res.redirect('/');
+        res.status(401).json({ message: 'Unauthorized' });
     }
 });
 
-app.get('/logout', (req, res, next) => {
+app.post('/logout', (req, res, next) => {
     req.logout(function(err) {
         if (err) { return next(err); }
-        res.redirect('/');
+        res.json({ message: 'Logout successful' });
     });
 });
 
